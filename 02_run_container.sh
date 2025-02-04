@@ -4,9 +4,9 @@ then
     mkdir -p "Commands/bin"
 fi
 
-if [ ! -d "Projects/dev_ws_src" ]
+if [ ! -d "Projects/robotics40_ws/src" ]
 then
-    mkdir -p "Projects/dev_ws_src"
+    mkdir -p "Projects/robotics40_ws/src"
 fi
 
 if [ ! -d "ExampleCode" ]
@@ -30,20 +30,22 @@ vendor=`glxinfo | grep vendor | grep OpenGL | awk '{ print $4 }'`
 
 if [ $vendor == "NVIDIA" ]; then
     docker run -it --rm \
-        --name ros2_foxy_desktop \
-        --hostname ros2_foxy_desktop \
-        --device /dev/snd \
-        --env="DISPLAY" \
-        --env="QT_X11_NO_MITSHM=1" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        -v `pwd`/Commands/bin:/home/user/bin \
-        -v `pwd`/ExampleCode:/home/user/ExampleCode \
-        -v `pwd`/Projects/dev_ws_src:/home/user/Projects/dev_ws/src \
-        -env="XAUTHORITY=$XAUTH" \
-        --volume="$XAUTH:$XAUTH" \
-        --gpus all \
-        ros2_foxy_docker:latest \
-        bash
+    --name ros2_foxy_desktop \
+    --hostname ros2_foxy_desktop \
+    --device /dev/snd \
+    --env="DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -v `pwd`/Commands/bin:/home/user/bin \
+    -v `pwd`/ExampleCode:/home/user/ExampleCode \
+    -v `pwd`/Projects/robotics40_ws/src:/home/user/Projects/robotics40_ws/src \
+    -env="XAUTHORITY=$XAUTH" \
+    --volume="$XAUTH:$XAUTH" \
+    --gpus all \
+    --user $(id -u):$(id -g) \  
+    ros2_foxy_docker:latest \
+    bash
+
 else
     docker run --privileged -it --rm \
         --name ros2_foxy_desktop \
@@ -51,7 +53,7 @@ else
         --volume=/tmp/.X11-unix:/tmp/.X11-unix \
         -v `pwd`/Commands/bin:/home/user/bin \
         -v `pwd`/ExampleCode:/home/user/ExampleCode \
-        -v `pwd`/Projects/dev_ws_src:/home/user/Projects/dev_ws/src \
+        -v `pwd`/Projects/robotics40_ws/src:/home/user/Projects/robotics40_ws/src \
         --device=/dev/dri:/dev/dri \
         --env="DISPLAY=$DISPLAY" \
         -e "TERM=xterm-256color" \

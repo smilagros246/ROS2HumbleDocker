@@ -72,13 +72,13 @@ RUN echo LS_COLORS=$LS_COLORS:\'di=1\;33:ln=36\' >> ~/.bashrc \
 RUN rosdep update \
         && echo "source /opt/ros/foxy/setup.bash" >> /home/user/.bashrc
 
-RUN mkdir -p Projects/dev_ws/src
+RUN mkdir -p Projects/robotics40_ws/src
 
 RUN echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /home/user/.bashrc \
-        && echo "export _colcon_cd_root=/home/user/Projects/dev_ws" >> /home/user/.bashrc \
-		&& /bin/bash -c '. /opt/ros/foxy/setup.bash; cd /home/user/Projects/dev_ws; colcon build'
+        && echo "export _colcon_cd_root=/home/user/Projects/robotics40_ws" >> /home/user/.bashrc \
+		&& /bin/bash -c '. /opt/ros/foxy/setup.bash; cd /home/user/Projects/robotics40_ws; colcon build'
 
-RUN echo "source /home/user/Projects/dev_ws/install/setup.bash --extend" >> /home/user/.bashrc
+RUN echo "source /home/user/Projects/robotics40_ws/install/setup.bash --extend" >> /home/user/.bashrc
 
 RUN echo 'PATH=~/.local/bin:$PATH' >> ~/.bashrc
 
