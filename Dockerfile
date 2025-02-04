@@ -39,6 +39,8 @@ RUN set -x \
         && echo "user:user" | chpasswd && adduser user sudo \
         && echo "user ALL=(ALL) NOPASSWD: ALL " >> /etc/sudoers
 
+RUN apt-get update && apt-get install -y openssh-client
+
 # The OSRF container didn't link python3 to python, causing ROS scripts to fail.
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
