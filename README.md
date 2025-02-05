@@ -9,7 +9,7 @@ https://github.com/PXLAIRobotics/ROSNoeticDocker
 
 A bash script is provided to build the container, it can be executed by entering the following command:
 ```bash
-./01_build_image.sh 
+./01_build_image.sh robotics40 usuario_local
 ```
 
 Make sure you make the scripts executable:
@@ -24,5 +24,5 @@ chmod +x 02_run_container_sh
 
 To start the container execute the script below:
 ```bash
-./02_run_container.sh
+./02_run_container.sh robotics40
 ```
