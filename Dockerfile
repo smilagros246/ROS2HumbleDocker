@@ -1,89 +1,169 @@
+# Usar la imagen base de ROS 2 Foxy
 FROM osrf/ros:foxy-desktop
 
-# After FROM, enter the parent image from wich you want to build.
-# We choose foxy-desktop.
-
-# Currently, we are operating as root.
-
-# Environment variable -> set language to C (computer) UTF-8 (8 bit unicode transformation format).
+# Configurar la localización y la variable de entorno para Python
 ENV LANG C.UTF-8
-
-# Debconf is used to perform system-wide configutarions.
-# Noninteractive -> use default settings -> put in debconf db.
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-
-# Set the nvidia container runtime.
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
-
-# Environment variable -> see output in real time.
 ENV PYTHONUNBUFFERED 1
 
-# Install some handy tools.
-RUN set -x \
-        && apt-get update \
-        && apt-get upgrade -y \
-        && apt-get install -y apt-utils \
-        && apt-get install -y mesa-utils \
-        && apt-get install -y iputils-ping \
-        && apt-get install -y apt-transport-https ca-certificates \
-        && apt-get install -y openssh-server python3-pip exuberant-ctags \
-        && apt-get install -y git vim tmux nano htop sudo curl wget gnupg2 \
-        && apt-get install -y bash-completion \
-        && apt-get install -y python3-psycopg2 \
-        && pip3 install powerline-shell \
-        && rm -rf /var/lib/apt/lists/* \
-        && useradd -ms /bin/bash user \
-        && echo "user:user" | chpasswd && adduser user sudo \
-        && echo "user ALL=(ALL) NOPASSWD: ALL " >> /etc/sudoers
+# Definir argumentos para usuario dinámico (usando el nombre de usuario del host)
+ARG USER_NAME=${USER}
 
-RUN apt-get update && apt-get install -y openssh-client
+# Instalar herramientas adicionales necesarias
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y apt-utils mesa-utils iputils-ping apt-transport-https ca-certificates \
+    && apt-get install -y openssh-server python3-pip exuberant-ctags \
+    && apt-get install -y git vim tmux nano htop sudo curl wget gnupg2 \
+    && apt-get install -y bash-completion python3-psycopg2 \
+    && pip3 install powerline-shell \
+    && rm -rf /var/lib/apt/lists/*
 
-# The OSRF container didn't link python3 to python, causing ROS scripts to fail.
+# Crear usuario dinámico con permisos sudo
+RUN useradd -ms /bin/bash $USER_NAME \
+    && echo "$USER_NAME:$USER_NAME" | chpasswd \
+    && adduser $USER_NAME sudo \
+    && echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Definir variables de entorno
+ENV CONTAINER_USER_HOME=/home/$USER_NAME
+ENV CONTAINER_WORKDIR=$CONTAINER_USER_HOME/robotics40_ws
+ENV CONTAINER_SCRIPTS=$CONTAINER_WORKDIR/scripts
+
+# Configuración de Python en ROS
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Set USER to user + define working directory.
-USER user
-WORKDIR /home/user
+# Crear carpetas necesarias con permisos correctos
+RUN mkdir -p $CONTAINER_USER_HOME/.ssh && chmod 700 $CONTAINER_USER_HOME/.ssh \
+    && mkdir -p $CONTAINER_USER_HOME/.vim/bundle \
+    && chown -R $USER_NAME:$USER_NAME $CONTAINER_USER_HOME
 
-# tmux
-RUN git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack  \
-        && git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect
-COPY --chown=user:user ./.tmux.conf /home/user/.tmux.conf
-COPY --chown=user:user ./.powerline.sh /home/user/.powerline.sh
+# Copiar y configurar Vundle (gestor de plugins de Vim)
+RUN git clone https://github.com/VundleVim/Vundle.vim.git $CONTAINER_USER_HOME/.vim/bundle/Vundle.vim
+COPY --chown=$USER_NAME:$USER_NAME ./.vimrc $CONTAINER_USER_HOME/.vimrc
 
-# vim
-RUN mkdir -p /home/user/.vim/bundle \
-        && git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+# Configurar ROS y CycloneDDS
+RUN apt-get update \
+    && apt-get install -y ros-foxy-rmw-cyclonedds-cpp ros-foxy-rosidl-generator-dds-idl \
+    && apt-get install -y build-essential cmake pkg-config libssl-dev
 
-COPY --chown=user:user ./.vimrc /home/user/.vimrc
+# Configuración de ROS en el .bashrc
+RUN echo 'source /opt/ros/foxy/setup.bash' >> /home/$USER_NAME/.bashrc \
+    && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /home/$USER_NAME/.bashrc \
+    && echo "export _colcon_cd_root=/home/$USER_NAME/robotics40_ws" >> /home/$USER_NAME/.bashrc
 
-RUN set -x \
-        && vim -E -u NONE -S /home/user/.vimrc -C "+PluginInstall" -C "+qall";  exit 0
+# Cambiar al usuario configurado dinámicamente
+USER $USER_NAME
 
-# Set some decent colors if the container needs to be accessed via /bin/bash.
-RUN echo LS_COLORS=$LS_COLORS:\'di=1\;33:ln=36\' >> ~/.bashrc \
-        && echo export LS_COLORS >> ~/.bashrc \
-        && echo 'source ~/.powerline.sh' >> ~/.bashrc \
-        && echo 'alias tmux="tmux -2"' >> ~/.bashrc \
-        && echo 'PATH=~/bin:$PATH' >> ~/.bashrc \
-        && touch ~/.sudo_as_admin_successful # To surpress the sudo message at run.
+# Definir el directorio de trabajo
+WORKDIR $CONTAINER_USER_HOME
 
-RUN rosdep update \
-        && echo "source /opt/ros/foxy/setup.bash" >> /home/user/.bashrc
+# Configuración de SSH
+# Copiar las claves SSH al contenedor
+# Copiar las claves SSH al contenedor
+COPY --chown=$USER_NAME:$USER_NAME .ssh/id_rsa /home/$USER_NAME/.ssh/id_rsa
+COPY --chown=$USER_NAME:$USER_NAME .ssh/id_rsa.pub /home/$USER_NAME/.ssh/id_rsa.pub
 
-RUN mkdir -p Projects/robotics40_ws/src
 
-RUN echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /home/user/.bashrc \
-        && echo "export _colcon_cd_root=/home/user/Projects/robotics40_ws" >> /home/user/.bashrc \
-		&& /bin/bash -c '. /opt/ros/foxy/setup.bash; cd /home/user/Projects/robotics40_ws; colcon build'
+# Configurar permisos para las claves SSH
+RUN chmod 600 /home/$USER_NAME/.ssh/id_rsa \
+    && chmod 644 /home/$USER_NAME/.ssh/id_rsa.pub \
+    && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/.ssh
 
-RUN echo "source /home/user/Projects/robotics40_ws/install/setup.bash --extend" >> /home/user/.bashrc
+# Añadir la clave pública de GitHub a known_hosts para evitar problemas de verificación
+RUN ssh-keyscan github.com >> /home/$USER_NAME/.ssh/known_hosts
 
-RUN echo 'PATH=~/.local/bin:$PATH' >> ~/.bashrc
+# Asegúrate de que el repositorio se haya clonado correctamente usando SSH
+RUN git clone git@github.com:dockerobotics40/unitree_sdk2.git /home/$USER_NAME/unitree_sdk2 && ls -l /home/$USER_NAME/unitree_sdk2
+RUN cmake --version && make --version
 
-STOPSIGNAL SIGTERM
+# Usar la imagen base de ROS 2 Foxy
+FROM osrf/ros:foxy-desktop
 
+# Configurar la localización y la variable de entorno para Python
+ENV LANG C.UTF-8
+ENV PYTHONUNBUFFERED 1
+
+# Definir argumentos para usuario dinámico (usando el nombre de usuario del host)
+ARG USER_NAME=${USER}
+
+# Instalar herramientas adicionales necesarias
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install -y apt-utils mesa-utils iputils-ping apt-transport-https ca-certificates \
+    && apt-get install -y openssh-server python3-pip exuberant-ctags \
+    && apt-get install -y git vim tmux nano htop sudo curl wget gnupg2 \
+    && apt-get install -y bash-completion python3-psycopg2 \
+    && pip3 install powerline-shell \
+    && rm -rf /var/lib/apt/lists/*
+
+# Crear usuario dinámico con permisos sudo
+RUN useradd -ms /bin/bash $USER_NAME \
+    && echo "$USER_NAME:$USER_NAME" | chpasswd \
+    && adduser $USER_NAME sudo \
+    && echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Definir variables de entorno
+ENV CONTAINER_USER_HOME=/home/$USER_NAME
+ENV CONTAINER_WORKDIR=$CONTAINER_USER_HOME/robotics40_ws
+ENV CONTAINER_SCRIPTS=$CONTAINER_WORKDIR/scripts
+
+# Configuración de Python en ROS
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Crear carpetas necesarias con permisos correctos
+RUN mkdir -p $CONTAINER_USER_HOME/.ssh && chmod 700 $CONTAINER_USER_HOME/.ssh \
+    && mkdir -p $CONTAINER_USER_HOME/.vim/bundle \
+    && chown -R $USER_NAME:$USER_NAME $CONTAINER_USER_HOME
+
+# Copiar y configurar Vundle (gestor de plugins de Vim)
+RUN git clone https://github.com/VundleVim/Vundle.vim.git $CONTAINER_USER_HOME/.vim/bundle/Vundle.vim
+COPY --chown=$USER_NAME:$USER_NAME ./.vimrc $CONTAINER_USER_HOME/.vimrc
+
+# Configurar ROS y CycloneDDS
+RUN apt-get update \
+    && apt-get install -y ros-foxy-rmw-cyclonedds-cpp ros-foxy-rosidl-generator-dds-idl \
+    && apt-get install -y build-essential cmake pkg-config libssl-dev
+
+# Configuración de ROS en el .bashrc
+RUN echo 'source /opt/ros/foxy/setup.bash' >> /home/$USER_NAME/.bashrc \
+    && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /home/$USER_NAME/.bashrc \
+    && echo "export _colcon_cd_root=/home/$USER_NAME/robotics40_ws" >> /home/$USER_NAME/.bashrc
+
+# Cambiar al usuario configurado dinámicamente
+USER $USER_NAME
+
+# Definir el directorio de trabajo
+WORKDIR $CONTAINER_USER_HOME
+
+# Configuración de SSH
+# Copiar las claves SSH al contenedor
+# Copiar las claves SSH al contenedor
+COPY --chown=$USER_NAME:$USER_NAME .ssh/id_rsa /home/$USER_NAME/.ssh/id_rsa
+COPY --chown=$USER_NAME:$USER_NAME .ssh/id_rsa.pub /home/$USER_NAME/.ssh/id_rsa.pub
+
+
+# Configurar permisos para las claves SSH
+RUN chmod 600 /home/$USER_NAME/.ssh/id_rsa \
+    && chmod 644 /home/$USER_NAME/.ssh/id_rsa.pub \
+    && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/.ssh
+
+# Añadir la clave pública de GitHub a known_hosts para evitar problemas de verificación
+RUN ssh-keyscan github.com >> /home/$USER_NAME/.ssh/known_hosts
+
+# Asegúrate de que el repositorio se haya clonado correctamente usando SSH
+RUN git clone git@github.com:dockerobotics40/unitree_sdk2.git /home/$USER_NAME/unitree_sdk2 && ls -l /home/$USER_NAME/unitree_sdk2
+RUN cmake --version && make --version
+
+# Verifica que la ruta sea correcta antes de intentar crear el directorio build
+RUN mkdir -p /home/$USER_NAME/unitree_sdk2/build \
+    && cd /home/$USER_NAME/unitree_sdk2/build \
+    && cmake .. \
+    && make \
+    && sudo make install
+
+RUN ls -l /home/$USER_NAME/unitree_sdk2
+RUN ls -l /usr/local/include/unitree
+RUN ls -l /usr/local/lib    
+     
+    
+
+# Iniciar SSH y mantener el contenedor en ejecución
 CMD sudo service ssh start && /bin/bash

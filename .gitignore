@@ -1,1 +1,5 @@
-./ssh
+# Ignorar la carpeta .ssh
+.ssh/
+
+# Ignorar la carpeta docker/container
+docker/container/
