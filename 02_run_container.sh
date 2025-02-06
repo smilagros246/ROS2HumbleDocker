@@ -55,6 +55,7 @@ docker run -it --rm \
     --network="host" \
     --ipc="host" \
     --oom-kill-disable \
+    --privileged \
     --volume="$HOST_USER_HOME:$CONTAINER_USER_HOME:rw" \
     --volume="/etc/group:/etc/group:ro" \
     --volume="/etc/passwd:/etc/passwd:ro" \
@@ -68,6 +69,4 @@ docker run -it --rm \
     --workdir="$CONTAINER_WORKDIR" \
     ros2_foxy_docker:robotics40 \
     bash
-
-
-#--privileged \
+    
