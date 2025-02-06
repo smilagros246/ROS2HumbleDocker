@@ -54,7 +54,6 @@ docker run -it --rm \
     --env="QT_X11_NO_MITSHM=1" \
     --network="host" \
     --ipc="host" \
-    --privileged \
     --oom-kill-disable \
     --volume="$HOST_USER_HOME:$CONTAINER_USER_HOME:rw" \
     --volume="/etc/group:/etc/group:ro" \
@@ -69,3 +68,6 @@ docker run -it --rm \
     --workdir="$CONTAINER_WORKDIR" \
     ros2_foxy_docker:robotics40 \
     bash
+
+
+#--privileged \

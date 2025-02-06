@@ -91,7 +91,8 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y openssh-server python3-pip exuberant-ctags \
     && apt-get install -y git vim tmux nano htop sudo curl wget gnupg2 \
     && apt-get install -y bash-completion python3-psycopg2 \
-    && pip3 install powerline-shell \
+    && apt-get install -y ros-foxy-cv-bridge python3-opencv \
+    && pip3 install numpy powerline-shell imageio[ffmpeg] \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear usuario dinámico con permisos sudo
