@@ -92,6 +92,7 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y git vim tmux nano htop sudo curl wget gnupg2 \
     && apt-get install -y bash-completion python3-psycopg2 \
     && apt-get install -y ros-foxy-cv-bridge python3-opencv \
+    && apt-get install ros-foxt-plotjuggler-ros \
     && pip3 install numpy powerline-shell imageio[ffmpeg] \
     && rm -rf /var/lib/apt/lists/*
 
@@ -163,6 +164,8 @@ RUN mkdir -p /home/$USER_NAME/unitree_sdk2/build \
 RUN ls -l /home/$USER_NAME/unitree_sdk2
 RUN ls -l /usr/local/include/unitree
 RUN ls -l /usr/local/lib    
+
+
      
     
 

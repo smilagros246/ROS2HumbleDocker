@@ -27,6 +27,8 @@ else
     git clone https://github.com/ros2/rmw_cyclonedds -b foxy $CONTAINER_HOME/unitree_ros2/cyclonedds_ws/src/rmw_cyclonedds
     git clone https://github.com/eclipse-cyclonedds/cyclonedds -b releases/0.10.x $CONTAINER_HOME/unitree_ros2/cyclonedds_ws/src/cyclonedds
     git clone git@github.com:dockerobotics40/robotics40_dev.git $WS_SRC_FOLDER/robotics40_dev
+    git clone https://github.com/Livox-SDK/livox_ros_driver2.git $WS_SRC_FOLDER/livox_ros_driver2
+    git clone https://github.com/Livox-SDK/Livox-SDK2.git $CONTAINER_HOME/Livox-SDK2
 
     # Construir la imagen Docker con el usuario personalizado
     echo "Construyendo imagen Docker con el alias $CONTAINER_ALIAS y usuario $USER_NAME..."
