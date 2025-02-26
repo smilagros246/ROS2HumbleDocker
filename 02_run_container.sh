@@ -62,6 +62,7 @@ docker run -it --rm \
     --volume="/etc/shadow:/etc/shadow:ro" \
     --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    --volume="$HOME/.ssh:/home/$USER_NAME/.ssh:ro" \
     --volume="$HOST_WORKDIR:$CONTAINER_WORKDIR:rw" \
     --volume="$HOST_SCRIPTS:$CONTAINER_SCRIPTS:rw" \
     --name="$CONTAINER_LABEL" \
