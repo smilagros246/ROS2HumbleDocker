@@ -1,0 +1,58 @@
+FROM ros:humble-ros-core
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Variables para el usuario
+ARG USER_NAME=sofia
+ARG CONTAINER_USER_HOME=/home/$USER_NAME
+
+# Instalación de herramientas necesarias
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    sudo \
+    nano \
+    python3-pip \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    bash-completion \
+    # ROS 2 Joy y teleoperación
+    ros-humble-joy \
+    ros-humble-teleop-twist-joy \
+    # ROS 2 Control completo
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-hardware-interface \
+    ros-humble-controller-interface \
+    ros-humble-controller-manager \
+    ros-humble-diff-drive-controller \
+    ros-humble-joint-state-broadcaster \
+    ros-humble-cv-bridge \
+    ros-humble-rmw-cyclonedds-cpp \
+    ros-humble-rosidl-generator-dds-idl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Crear usuario
+RUN useradd -m -s /bin/bash $USER_NAME && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Inicializar rosdep (la actualización debe hacerse al correr el contenedor)
+RUN rosdep init || true
+
+# Configuración del entorno bash
+RUN echo "source /opt/ros/humble/setup.bash" >> $CONTAINER_USER_HOME/.bashrc \
+    && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> $CONTAINER_USER_HOME/.bashrc \
+    && echo "export _colcon_cd_root=$CONTAINER_USER_HOME/ros2_ws" >> $CONTAINER_USER_HOME/.bashrc \
+    && echo "export ROS_DOMAIN_ID=42" >> $CONTAINER_USER_HOME/.bashrc
+
+# Crear workspace
+RUN mkdir -p $CONTAINER_USER_HOME/ros2_ws/src && \
+    chown -R $USER_NAME:$USER_NAME $CONTAINER_USER_HOME/ros2_ws
+
+# Cambiar al usuario configurado
+USER $USER_NAME
+WORKDIR $CONTAINER_USER_HOME/ros2_ws
+
+# Comando por defecto
+CMD ["/bin/bash"]
+

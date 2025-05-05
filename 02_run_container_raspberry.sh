@@ -15,12 +15,6 @@ fi
 CONTAINER_LABEL="ros2_$1"
 CONTAINER_ALIAS="$1"
 
-# Verificación de glxinfo antes de usarlo
-if ! command -v glxinfo &> /dev/null; then
-    echo "glxinfo command not found! Execute 'sudo apt install mesa-utils' to install it."
-    exit 1
-fi
-
 # Directorios de contenedor
 CONTAINER_USER_HOME="/home/$USER_NAME"
 CONTAINER_WORKDIR="$CONTAINER_USER_HOME/ros2_ws"   # ← CAMBIADO
@@ -35,20 +29,9 @@ HOST_SCRIPTS="$(pwd)/scripts"
 mkdir -p "$HOST_USER_HOME"
 mkdir -p "$HOST_WORKDIR"
 
-# Activar el uso de GPU si es compatible
-VENDOR=$(glxinfo | grep vendor | grep OpenGL | awk '{ print $4 }')
-
-if [ "$VENDOR" == "NVIDIA" ]; then
-    USE_GPUS="--gpus all"
-    echo "NVIDIA's GPU WAS detected. Activating '--gpus all' flag."
-else
-    USE_GPUS=""
-    echo "NVIDIA's GPU WAS NOT detected."
-fi
-
 # Ejecutar el contenedor Docker
 docker run -it --rm \
-    $USE_GPUS \
+    --entrypoint "" \
     --user "$(id -u):$(id -g)" \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
@@ -68,6 +51,5 @@ docker run -it --rm \
     --name="$CONTAINER_LABEL" \
     --volume="/dev:/dev:rw" \
     --workdir="$CONTAINER_WORKDIR" \
-    ros2_humble_bombero:bombero2025 \
+    ros2_humble_bombero:$CONTAINER_ALIAS \
     bash
-
