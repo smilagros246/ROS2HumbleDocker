@@ -1,6 +1,6 @@
-# ROS2 Foxy Docker
+# ROS2 Humble Docker
 
-This container contains the scripts to build and run a ROS2 Foxy Fitzroy container.
+This container contains the scripts to build and run a ROS2 Humble container.
 This repository is inspired by Tim Dupont's ROSNoetic docker.
 https://github.com/PXLAIRobotics/ROSNoeticDocker
 
@@ -9,7 +9,7 @@ https://github.com/PXLAIRobotics/ROSNoeticDocker
 
 A bash script is provided to build the container, it can be executed by entering the following command:
 ```bash
-./01_build_image.sh robotics40 usuario_local
+./01_build_image.sh NombreTag usuario_local
 ```
 
 Make sure you make the scripts executable:
@@ -24,5 +24,5 @@ chmod +x 02_run_container_sh
 
 To start the container execute the script below:
 ```bash
-./02_run_container.sh robotics40
+./02_run_container.sh NombreTag
 ```
