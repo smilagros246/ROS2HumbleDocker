@@ -50,6 +50,8 @@ fi
 docker run -it --rm \
     $USE_GPUS \
     --user "$(id -u):$(id -g)" \
+    --device=/dev/ttyUSB0 \
+    --group-add dialout \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
     --network="host" \
@@ -68,6 +70,5 @@ docker run -it --rm \
     --name="$CONTAINER_LABEL" \
     --volume="/dev:/dev:rw" \
     --workdir="$CONTAINER_WORKDIR" \
-    ros2_humble_bombero:bombero2025 \
+    ros2_humble_bombero:$CONTAINER_ALIAS \
     bash
-

@@ -25,16 +25,41 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-ros2-controllers \
     ros-humble-hardware-interface \
     ros-humble-controller-interface \
+    ros-humble-xacro \
     ros-humble-controller-manager \
     ros-humble-diff-drive-controller \
     ros-humble-joint-state-broadcaster \
     ros-humble-cv-bridge \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-rosidl-generator-dds-idl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean  
+
+# Instalar dependencias de libserial
+RUN apt-get update && apt-get install -y \
+    g++ git autogen autoconf build-essential cmake graphviz \
+    libboost-dev libboost-test-dev libgtest-dev libtool \
+    python3-sip-dev doxygen python3-sphinx pkg-config \
+    python3-sphinx-rtd-theme
+
+# Clonar y compilar libserial
+RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
+    && cd /tmp/libserial \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && ldconfig \
+    && rm -rf /tmp/libserial
+# Limpiar apt cache
+RUN rm -rf /var/lib/apt/lists/
 
 # Crear usuario
-RUN useradd -m -s /bin/bash $USER_NAME && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# Crear usuario dinámico con permisos sudo y acceso a dialout
+RUN useradd -m -s /bin/bash $USER_NAME \
+    && echo "$USER_NAME:$USER_NAME" | chpasswd \
+    && adduser $USER_NAME sudo \
+    && usermod -aG dialout $USER_NAME \
+    && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Inicializar rosdep (la actualización debe hacerse al correr el contenedor)
 RUN rosdep init || true

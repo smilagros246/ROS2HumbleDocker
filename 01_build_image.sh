@@ -22,7 +22,8 @@ else
 
     # Clonar tu repositorio de robot bombero
     echo "Clonando repositorio robot_bombero_uao..."
-    git clone https://github.com/smilagros246/robot_bombero_uao.git $WS_SRC_FOLDER/robot_bombero_uao
+    git clone git@github.com:smilagros246/robot_bombero_uao.git $WS_SRC_FOLDER/robot_bombero_uao
+    git clone https://github.com/crayzeewulf/libserial.git $CONTAINER_HOME/libserial
 
     # Construir la imagen Docker con el usuario personalizado
     echo "Construyendo imagen Docker con el alias $CONTAINER_ALIAS y usuario $USER_NAME..."

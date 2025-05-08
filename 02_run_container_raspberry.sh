@@ -29,10 +29,13 @@ HOST_SCRIPTS="$(pwd)/scripts"
 mkdir -p "$HOST_USER_HOME"
 mkdir -p "$HOST_WORKDIR"
 
+#CAMBIAR EN LA RASP el device
 # Ejecutar el contenedor Docker
 docker run -it --rm \
     --entrypoint "" \
     --user "$(id -u):$(id -g)" \
+    --device=/dev/ttyUSB0 \
+    --group-add dialout \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
     --network="host" \

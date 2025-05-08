@@ -35,9 +35,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     python3-opencv \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-rosidl-generator-dds-idl \
+    ros-humble-joint-state-publisher-gui \
     ros-humble-joy \
     ros-humble-teleop-twist-joy \
     ros-humble-ros2-control \
+    ros-humble-xacro \
     ros-humble-ros2-controllers \
     ros-humble-rviz2 \
     ros-humble-cv-bridge \
@@ -48,14 +50,30 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     python3-rosdep \
     && rosdep init || true
 
+# Instalar dependencias de libserial
+RUN apt-get update && apt-get install -y \
+    g++ git autogen autoconf build-essential cmake graphviz \
+    libboost-dev libboost-test-dev libgtest-dev libtool \
+    python3-sip-dev doxygen python3-sphinx pkg-config \
+    python3-sphinx-rtd-theme
 
+# Clonar y compilar libserial
+RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
+    && cd /tmp/libserial \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && make install \
+    && ldconfig \
+    && rm -rf /tmp/libserial
 # Limpiar apt cache
 RUN rm -rf /var/lib/apt/lists/*
 
-# Crear usuario dinámico con permisos sudo
+# Crear usuario dinámico con permisos sudo y acceso a dialout
 RUN useradd -ms /bin/bash $USER_NAME \
     && echo "$USER_NAME:$USER_NAME" | chpasswd \
     && adduser $USER_NAME sudo \
+    && usermod -aG dialout $USER_NAME \
     && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Definir variables de entorno
@@ -65,6 +83,7 @@ ENV CONTAINER_SCRIPTS=$CONTAINER_WORKDIR/scripts
 
 # Configuración de Python en ROS
 RUN ln -s /usr/bin/python3 /usr/bin/python
+
 
 # Crear carpetas necesarias con permisos correctos
 RUN mkdir -p $CONTAINER_USER_HOME/.ssh && chmod 700 $CONTAINER_USER_HOME/.ssh \
@@ -90,6 +109,7 @@ USER $USER_NAME
 
 # Definir el directorio de trabajo
 WORKDIR $CONTAINER_USER_HOME
+
 
 # Configuración de SSH
 # Copiar las claves SSH al contenedor
