@@ -9,6 +9,13 @@ ARG CONTAINER_USER_HOME=/home/$USER_NAME
 # Instalación de herramientas necesarias
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    apt-utils \
+    mesa-utils \
+    iputils-ping \
+    apt-transport-https \
+    ca-certificates \
+    lsb-release \
+    wget \
     cmake \
     git \
     sudo \
@@ -17,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-colcon-common-extensions \
     python3-rosdep \
     bash-completion \
+    openssh-server \
     # ROS 2 Joy y teleoperación
     ros-humble-joy \
     ros-humble-teleop-twist-joy \
@@ -28,6 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-xacro \
     ros-humble-controller-manager \
     ros-humble-diff-drive-controller \
+    ros-humble-robot-state-publisher \
     ros-humble-joint-state-broadcaster \
     ros-humble-cv-bridge \
     ros-humble-rmw-cyclonedds-cpp \
@@ -69,6 +78,11 @@ RUN echo "source /opt/ros/humble/setup.bash" >> $CONTAINER_USER_HOME/.bashrc \
     && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> $CONTAINER_USER_HOME/.bashrc \
     && echo "export _colcon_cd_root=$CONTAINER_USER_HOME/ros2_ws" >> $CONTAINER_USER_HOME/.bashrc \
     && echo "export ROS_DOMAIN_ID=42" >> $CONTAINER_USER_HOME/.bashrc
+
+# Crear carpetas necesarias con permisos correctos
+RUN mkdir -p $CONTAINER_USER_HOME/.ssh && chmod 700 $CONTAINER_USER_HOME/.ssh \
+    && mkdir -p $CONTAINER_USER_HOME/.vim/bundle \
+    && chown -R $USER_NAME:$USER_NAME $CONTAINER_USER_HOME
 
 # Crear workspace
 RUN mkdir -p $CONTAINER_USER_HOME/ros2_ws/src && \
