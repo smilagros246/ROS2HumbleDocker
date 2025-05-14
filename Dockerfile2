@@ -50,15 +50,15 @@ RUN apt-get update && apt-get install -y \
     python3-sip-dev doxygen python3-sphinx pkg-config \
     python3-sphinx-rtd-theme
 
-# Clonar y compilar libserial
-RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
-    && cd /tmp/libserial \
-    && mkdir build && cd build \
-    && cmake .. \
-    && make -j$(nproc) \
-    && make install \
-    && ldconfig \
-    && rm -rf /tmp/libserial
+# # Clonar y compilar libserial
+# RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
+#     && cd /tmp/libserial \
+#     && mkdir build && cd build \
+#     && cmake .. \
+#     && make -j$(nproc) \
+#     && make install \
+#     && ldconfig \
+#     && rm -rf /tmp/libserial
 # Limpiar apt cache
 RUN rm -rf /var/lib/apt/lists/
 
