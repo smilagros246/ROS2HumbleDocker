@@ -39,6 +39,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     ros-humble-joy \
     ros-humble-teleop-twist-joy \
     ros-humble-ros2-control \
+    ros-humble-realtime-tools \
     ros-humble-xacro \
     ros-humble-ros2-controllers \
     ros-humble-rviz2 \
@@ -58,14 +59,14 @@ RUN apt-get update && apt-get install -y \
     python3-sphinx-rtd-theme
 
 # Clonar y compilar libserial
-RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
-    && cd /tmp/libserial \
-    && mkdir build && cd build \
-    && cmake .. \
-    && make -j$(nproc) \
-    && make install \
-    && ldconfig \
-    && rm -rf /tmp/libserial
+# RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
+#     && cd /tmp/libserial \
+#     && mkdir build && cd build \
+#     && cmake .. \
+#     && make -j$(nproc) \
+#     && make install \
+#     && ldconfig \
+#     && rm -rf /tmp/libserial
 # Limpiar apt cache
 RUN rm -rf /var/lib/apt/lists/*
 

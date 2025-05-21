@@ -51,6 +51,8 @@ docker run -it --rm \
     $USE_GPUS \
     --user "$(id -u):$(id -g)" \
     --device=/dev/ttyUSB0 \
+    --device=/dev/input/js1 \
+    --device=/dev/uinput \
     --group-add dialout \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \

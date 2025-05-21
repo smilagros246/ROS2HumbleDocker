@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-hardware-interface \
     ros-humble-controller-interface \
     ros-humble-xacro \
+    ros-humble-realtime-tools \
     ros-humble-controller-manager \
     ros-humble-diff-drive-controller \
     ros-humble-robot-state-publisher \
