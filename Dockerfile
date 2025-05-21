@@ -49,6 +49,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     openssh-server \
     && pip3 install numpy powerline-shell imageio[ffmpeg] \
     python3-rosdep \
+    python3-smbus i2c-tools \
+    python3-smbus \
     && rosdep init || true
 
 # Instalar dependencias de libserial

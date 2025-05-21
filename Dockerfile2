@@ -42,6 +42,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-cv-bridge \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-rosidl-generator-dds-idl \
+    python3-smbus i2c-tools \
+    python3-smbus \
     && apt-get clean  
 
 # Instalar dependencias de libserial
