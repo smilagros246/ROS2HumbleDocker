@@ -3,7 +3,7 @@ FROM ros:humble-ros-core
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Variables para el usuario
-ARG USER_NAME=sofia
+ARG USER_NAME=rasberrypi-bombero
 ARG CONTAINER_USER_HOME=/home/$USER_NAME
 
 # Instalación de herramientas necesarias
