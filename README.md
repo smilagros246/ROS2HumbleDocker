@@ -77,6 +77,8 @@ Para ejecutar el script en la raspberry ejecutar:
 ./02_run_container._raspberrysh NombreTag
 ```
 
+Una vez dentro, puedes compilar los paquetes de ros2 usando colcon build desde el workspace ros2_ws.
+
 ## Recuersos adicionales
 
 En la carpeta Recursos útiles pueden encontrar:
