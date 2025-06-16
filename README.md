@@ -87,3 +87,10 @@ En la carpeta Recursos útiles pueden encontrar:
 - Códigos de pruebas de los diferentes elementos usados en el robot, para más información consultar en los requerimientos no funcionales de [Robot bombero UAO](https://github.com/smilagros246/robot_bombero_uao.git)
 - Códigos de python para pruebas de ejecución de los elementos con manejo teleoperado desde el terminal (sin uso de ROS2).
 
+## A tener en cuenta
+
+Si deseas no usar SSH debes cambiar los archivos de construcción y realizar las clonaciones mediante HTTPS, los cambios se deben realizar en esta linea de ambos archivos:
+![1750086402340](images/README/1750086402340.png)
+
+> Tener en cuenta que realizar la clonación de esta forma no permite realizar contribuciones y seguir el flujo de trabajo que ofrece Git.
+
