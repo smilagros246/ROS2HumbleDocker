@@ -93,4 +93,5 @@ Si deseas no usar SSH debes cambiar los archivos de construcción y realizar las
 ![1750086402340](images/README/1750086402340.png)
 
 > Tener en cuenta que realizar la clonación de esta forma no permite realizar contribuciones y seguir el flujo de trabajo que ofrece Git.
+> 📘 También disponible en [English](readme_en.md)
 
