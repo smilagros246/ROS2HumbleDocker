@@ -3,36 +3,51 @@ FROM ros:humble-ros-core
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Variables para el usuario
-ARG USER_NAME=rasberrypi-bombero
+ARG USER_NAME=sofia
 ARG CONTAINER_USER_HOME=/home/$USER_NAME
 
-# Instalación necesaria
+
+# ====== SISTEMA BASE ======
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Herramientas de compilación y desarrollo
-    build-essential cmake git \
-    # Utilidades necesarias para ROS y uso general
-    sudo nano wget iputils-ping openssh-server \
-    python3-pip python3-colcon-common-extensions python3-rosdep \
-    bash-completion \
-    # Paquetes ROS 2 requeridos
-    ros-humble-joy \
-    ros-humble-teleop-twist-joy \
-    ros-humble-ros2-control \
-    ros-humble-ros2-controllers \
-    ros-humble-hardware-interface \
-    ros-humble-controller-interface \
-    ros-humble-xacro \
-    ros-humble-realtime-tools \
-    ros-humble-controller-manager \
-    ros-humble-diff-drive-controller \
-    ros-humble-robot-state-publisher \
-    ros-humble-joint-state-broadcaster \
-    ros-humble-cv-bridge \
-    ros-humble-rmw-cyclonedds-cpp \
-    ros-humble-rosidl-generator-dds-idl \
-    python3-smbus i2c-tools \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    build-essential cmake git sudo nano wget iputils-ping openssh-server
+
+# ====== PYTHON Y COLCON ======
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip python3-colcon-common-extensions python3-rosdep bash-completion
+
+# ====== ROS 2 paquetes control ======
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-joy ros-humble-teleop-twist-joy
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-ros2-control ros-humble-ros2-controllers
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-hardware-interface ros-humble-controller-interface
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-xacro ros-humble-realtime-tools
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-controller-manager ros-humble-diff-drive-controller
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-robot-state-publisher ros-humble-joint-state-broadcaster
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-cv-bridge ros-humble-rmw-cyclonedds-cpp
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-rosidl-generator-dds-idl
+
+# ====== I2C / Hardware ======
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-smbus i2c-tools
+
+# Limpieza
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
 
 # Crear usuario con permisos sudo y dialout
 RUN useradd -m -s /bin/bash $USER_NAME \

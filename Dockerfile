@@ -33,6 +33,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     cmake \
     python3-pip \
     python3-opencv \
+    python3-smbus \
+    i2c-tools \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-rosidl-generator-dds-idl \
     ros-humble-joint-state-publisher-gui \
@@ -47,11 +49,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     ros-humble-gazebo-ros \
     ros-humble-gazebo-ros2-control \
     openssh-server \
-    && pip3 install numpy powerline-shell imageio[ffmpeg] \
-    python3-rosdep \
-    python3-smbus i2c-tools \
-    python3-smbus \
-    && rosdep init || true
+ && pip3 install numpy powerline-shell imageio[ffmpeg] \
+ && rosdep init || true
+
 
 # Instalar dependencias de libserial
 RUN apt-get update && apt-get install -y \
