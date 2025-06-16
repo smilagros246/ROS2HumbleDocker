@@ -49,9 +49,21 @@ Para crearla puedes guiarte del repositorio [Linux Stuffs](https://github.com/lo
 Considerando que el proyecto base consta de la ejecución simultanea en ROS2 usando una raspberry Pi4 y el PC, se proporcionan varios scripts tipo bash para constuir la imagen del contenedor según la funcionalidad dada en cada dispositivo:
 
 - `01_build_image.sh`para construir una  imagen Docker basada en ROS 2 Humble Desktop . Configura localización y Python, permite la selección dinámica de versiones de Gazebo, instala un amplio conjunto de herramientas del sistema, bibliotecas de ROS y paquetes esenciales como controladores, Rviz2 y Gazebo ROS 2 Control. Además, crea un usuario dinámico con permisos adecuados, gestiona claves SSH para conexión con GitHub, y establece un entorno de trabajo personalizado con Vim y configuración persistente de ROS.
-- `01_build_image_raspberry.sh`Para construir una imagen para usar en la raspberry Pi. Esta imagen Docker liviana está basada en ROS 2 Humble Core y está diseñada para ejecutarse en Raspberry Pi. Incluye herramientas esenciales de desarrollo, paquetes ROS 2 para control de hardware, comunicación I2C y teleoperación. Configura un usuario con permisos adecuados, inicializa `rosdep` y deja preparado el entorno de trabajo con Colcon y ROS 2.
+- `01_build_image_raspberry.sh`Para construir una imagen para usar en la raspberry Pi a la cual accedemos mediante SSH. Esta imagen Docker liviana está basada en ROS 2 Humble Core y está diseñada para ejecutarse en Raspberry Pi. Incluye herramientas esenciales de desarrollo, paquetes ROS 2 para control de hardware, comunicación I2C y teleoperación. Configura un usuario con permisos adecuados, inicializa `rosdep` y deja preparado el entorno de trabajo con Colcon y ROS 2.
 
-Para la ejecución de cada una se debe hacer:
+Una vez clonado el repositorio con:
+
+```bash
+git clone https://github.com/smilagros246/ROS2HumbleDocker.git
+```
+
+o
+
+```bash
+git clone git@github.com:smilagros246/ROS2HumbleDocker.git
+```
+
+Ve a la carpeta del repositorio en el terminal y para la ejecución de cada una se debe hacer:
 
 ```bash
 ./01_build_image.sh NombreTag usuario_local
@@ -65,7 +77,7 @@ Asegurate de tener todos los scripts ejecutable usando `chmod +x nombreArchivo` 
 
 ## Como iniciar el contenedor
 
-Para ejecutar el script en el PC ejecutar:
+Para ambos casos una ves ubicados en la carpeta del repositorio desde el terminal. Para ejecutar el script en el PC ejecutar:
 
 ```bash
 ./02_run_container.sh NombreTag
@@ -93,5 +105,6 @@ Si deseas no usar SSH debes cambiar los archivos de construcción y realizar las
 ![1750086402340](images/README/1750086402340.png)
 
 > Tener en cuenta que realizar la clonación de esta forma no permite realizar contribuciones y seguir el flujo de trabajo que ofrece Git.
+
 > 📘 También disponible en [English](readme_en.md)
 

@@ -52,9 +52,21 @@ To create an SSH key, you can follow the [Linux Stuffs](https://github.com/lomci
 The base project uses ROS 2 running simultaneously on both a Raspberry Pi 4 and a PC. It includes bash scripts to build Docker images tailored to each device:
 
 - `01_build_image.sh` builds a Docker image based on ROS 2 Humble Desktop. It sets up locales and Python, allows dynamic selection of the Gazebo version, installs essential system tools, ROS libraries, and packages like controllers, Rviz2, and Gazebo ROS 2 Control. It also creates a user with appropriate permissions, manages SSH keys for GitHub, and configures a personalized environment with Vim and persistent ROS setup.
-- `01_build_image_raspberry.sh` builds a lightweight image designed for Raspberry Pi, based on ROS 2 Humble Core. It includes basic development tools, control packages, I2C communication, and teleoperation. It creates a user, initializes `rosdep`, and sets up a Colcon/ROS 2 workspace.
+- `01_build_image_raspberry.sh` builds a lightweight image designed for Raspberry Pi which we access via ssh , based on ROS 2 Humble Core. It includes basic development tools, control packages, I2C communication, and teleoperation. It creates a user, initializes `rosdep`, and sets up a Colcon/ROS 2 workspace.
 
-To run either script:
+Once you clone the repository with:
+
+```bash
+git clone https://github.com/smilagros246/ROS2HumbleDocker.git
+```
+
+or
+
+```bash
+git clone git@github.com:smilagros246/ROS2HumbleDocker.git
+```
+
+Go to the repository folder and to run either script do:
 
 ```bash
 ./01_build_image.sh TagName local_user
@@ -68,7 +80,7 @@ Ensure all scripts are executable: `chmod +x scriptName`.
 
 ## How to run the container
 
-On the PC:
+For both cases once located in the repository folder from the terminal. To run the script on the PC run:
 
 ```bash
 ./02_run_container.sh TagName
