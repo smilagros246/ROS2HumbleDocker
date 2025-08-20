@@ -1,5 +1,5 @@
-# Imagen base ROS 2 Humble Desktop
-FROM osrf/ros:humble-desktop
+# Imagen base ROS 2 jazzy Desktop
+FROM osrf/ros:jazzy-desktop-full
 
 # Configurar la localización y Python
 ENV LANG C.UTF-8
@@ -24,6 +24,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     sudo \
     curl \
     git \
+    tree \
     vim \
     tmux \
     nano \
@@ -35,19 +36,19 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     python3-opencv \
     python3-smbus \
     i2c-tools \
-    ros-humble-rmw-cyclonedds-cpp \
-    ros-humble-rosidl-generator-dds-idl \
-    ros-humble-joint-state-publisher-gui \
-    ros-humble-joy \
-    ros-humble-teleop-twist-joy \
-    ros-humble-ros2-control \
-    ros-humble-realtime-tools \
-    ros-humble-xacro \
-    ros-humble-ros2-controllers \
-    ros-humble-rviz2 \
-    ros-humble-cv-bridge \
-    ros-humble-gazebo-ros \
-    ros-humble-gazebo-ros2-control \
+    ros-jazzy-rmw-cyclonedds-cpp \
+    ros-jazzy-rosidl-generator-dds-idl \
+    ros-jazzy-joint-state-publisher-gui \
+    ros-jazzy-joy \
+    ros-jazzy-teleop-twist-joy \
+    ros-jazzy-ros2-control \
+    ros-jazzy-realtime-tools \
+    ros-jazzy-xacro \
+    ros-jazzy-ros2-controllers \
+    ros-jazzy-rviz2 \
+    ros-jazzy-cv-bridge \
+    ros-jazzy-gazebo-ros \
+    ros-jazzy-gazebo-ros2-control \
     openssh-server \
  && pip3 install numpy powerline-shell imageio[ffmpeg] \
  && rosdep init || true
@@ -60,15 +61,6 @@ RUN apt-get update && apt-get install -y \
     python3-sip-dev doxygen python3-sphinx pkg-config \
     python3-sphinx-rtd-theme
 
-# Clonar y compilar libserial
-# RUN git clone https://github.com/crayzeewulf/libserial.git /tmp/libserial \
-#     && cd /tmp/libserial \
-#     && mkdir build && cd build \
-#     && cmake .. \
-#     && make -j$(nproc) \
-#     && make install \
-#     && ldconfig \
-#     && rm -rf /tmp/libserial
 # Limpiar apt cache
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -97,13 +89,13 @@ RUN mkdir -p $CONTAINER_USER_HOME/.ssh && chmod 700 $CONTAINER_USER_HOME/.ssh \
 RUN git clone https://github.com/VundleVim/Vundle.vim.git $CONTAINER_USER_HOME/.vim/bundle/Vundle.vim
 COPY --chown=$USER_NAME:$USER_NAME ./.vimrc $CONTAINER_USER_HOME/.vimrc
 
-# Configurar ROS 2 y CycloneDDS para Humble
+# Configurar ROS 2 y CycloneDDS para jazzy
 RUN apt-get update \
-    && apt-get install -y ros-humble-rmw-cyclonedds-cpp ros-humble-rosidl-generator-dds-idl \
+    && apt-get install -y ros-jazzy-rmw-cyclonedds-cpp ros-jazzy-rosidl-generator-dds-idl \
     && apt-get install -y build-essential cmake pkg-config libssl-dev
 
 # Configuración de ROS en el .bashrc
-RUN echo 'source /opt/ros/humble/setup.bash' >> /home/$USER_NAME/.bashrc \
+RUN echo 'source /opt/ros/jazzy/setup.bash' >> /home/$USER_NAME/.bashrc \
     && echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> /home/$USER_NAME/.bashrc \
     && echo "export _colcon_cd_root=/home/$USER_NAME/ros2_ws" >> /home/$USER_NAME/.bashrc
 

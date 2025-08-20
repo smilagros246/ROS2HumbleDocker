@@ -72,5 +72,5 @@ docker run -it --rm \
     --name="$CONTAINER_LABEL" \
     --volume="/dev:/dev:rw" \
     --workdir="$CONTAINER_WORKDIR" \
-    ros2_humble_bombero:$CONTAINER_ALIAS \
+    ros2_jazzy_bombero:$CONTAINER_ALIAS \
     bash
